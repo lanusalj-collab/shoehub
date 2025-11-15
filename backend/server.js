@@ -20,6 +20,7 @@ mongoose.connect(MONGODB_URI, {
 
 // Models
 const Product = require('./models/Product');
+const Order = require('./models/Order');
 
 // Basic health check
 app.get('/api/health', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
@@ -86,6 +87,71 @@ app.delete('/api/products/:id', adminKeyMiddleware, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
+// Checkout: Create and save order to MongoDB
+app.post('/api/checkout', async (req, res) => {
+  try {
+    const { customer, items, total } = req.body;
+    
+    // Validate required fields
+    if (!customer || !customer.name || !customer.email || !customer.address) {
+      return res.status(400).json({ error: 'Missing required customer information' });
+    }
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Cart is empty' });
+    }
+    if (!total || total <= 0) {
+      return res.status(400).json({ error: 'Invalid order total' });
+    }
+
+    // Generate unique order ID
+    const orderId = `ORD-${Date.now().toString().slice(-8)}`;
+
+    // Create and save order
+    const order = new Order({
+      orderId,
+      customer,
+      items,
+      total,
+      status: 'pending'
+    });
+
+    await order.save();
+
+    console.log(`Order created: ${orderId}`);
+    res.status(201).json({ 
+      success: true, 
+      orderId, 
+      message: 'Order placed successfully' 
+    });
+  } catch (err) {
+    console.error('Checkout error:', err);
+    res.status(500).json({ error: 'Failed to process order', details: err.message });
+  }
+});
+
+// Get all orders (admin only, optional: protect with adminKeyMiddleware)
+app.get('/api/orders', adminKeyMiddleware, async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 }).lean();
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+// Get order by ID
+app.get('/api/orders/:id', async (req, res) => {
+  try {
+    const order = await Order.findOne({ orderId: req.params.id }).lean();
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    res.json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch order' });
   }
 });
 

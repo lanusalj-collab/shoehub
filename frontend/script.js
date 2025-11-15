@@ -262,7 +262,7 @@ if (confirmCheckoutBtn) {
 
         try {
             confirmCheckoutBtn.disabled = true;
-            const res = await fetch('http://localhost:3000/checkout', {
+            const res = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(order)
