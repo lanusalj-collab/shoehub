@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: shoehub
+    env: node
+    plan: free
+    branch: main
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: MONGODB_URI
+        # Set this in Render web UI or replace the value here for a one-off deploy
+        value: "${MONGODB_URI}"
+        sync: false
+
+    # Optional: set a root directory if your code lives in a subfolder
+    # rootDir: ""

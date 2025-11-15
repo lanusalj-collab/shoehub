@@ -25,6 +25,15 @@ const Product = require('./models/Product');
 app.get('/api/health', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
 
 // CRUD: Products
+// Admin API key middleware: if ADMIN_API_KEY is set, require header 'x-admin-key' to match
+function adminKeyMiddleware(req, res, next) {
+  const required = process.env.ADMIN_API_KEY;
+  if (!required) return next();
+  const provided = req.headers['x-admin-key'] || req.headers['x-admin-token'] || req.query.admin_key;
+  if (provided && provided === required) return next();
+  return res.status(401).json({ error: 'Unauthorized' });
+}
+
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 }).lean();
@@ -46,7 +55,7 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', adminKeyMiddleware, async (req, res) => {
   try {
     const body = req.body || {};
     const product = new Product(body);
@@ -58,7 +67,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', adminKeyMiddleware, async (req, res) => {
   try {
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!updated) return res.status(404).json({ error: 'Product not found' });
@@ -69,7 +78,7 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', adminKeyMiddleware, async (req, res) => {
   try {
     const removed = await Product.findByIdAndDelete(req.params.id);
     if (!removed) return res.status(404).json({ error: 'Product not found' });
@@ -81,7 +90,7 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 // Seed endpoint: create default products if collection empty
-app.post('/api/products/seed', async (req, res) => {
+app.post('/api/products/seed', adminKeyMiddleware, async (req, res) => {
   try {
     const count = await Product.estimatedDocumentCount();
     if (count > 0) return res.status(409).json({ error: 'Products already exist' });
@@ -101,7 +110,17 @@ app.post('/api/products/seed', async (req, res) => {
   }
 });
 
-// Fallback for other routes
+// Serve frontend static files (so root URL serves the site)
+const frontendPath = path.join(__dirname, '..', 'frontend');
+app.use(express.static(frontendPath));
+
+// For any non-API route, serve index.html (supports client-side routing)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Fallback for other API routes (if not handled above)
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });

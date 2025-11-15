@@ -14,9 +14,22 @@ console.log('admin.js loaded (v2)');
 // Server availability flag
 let serverAvailable = false;
 
+// Build headers for API requests, include admin key if present
+function buildHeaders(includeJson = true) {
+    const headers = {};
+    try {
+        const token = localStorage.getItem('adminToken');
+        if (token) headers['x-admin-key'] = token;
+    } catch (e) {
+        // ignore
+    }
+    if (includeJson) headers['Content-Type'] = 'application/json';
+    return headers;
+}
+
 async function checkServerAvailability() {
     try {
-        const res = await fetch('/api/health', { cache: 'no-store' });
+        const res = await fetch('/api/health', { cache: 'no-store', headers: buildHeaders(false) });
         if (res && res.ok) {
             serverAvailable = true;
             console.info('Backend API reachable');
@@ -59,7 +72,7 @@ function getAdminProducts() {
 async function loadProducts() {
     if (serverAvailable) {
         try {
-            const res = await fetch('/api/products');
+            const res = await fetch('/api/products', { headers: buildHeaders(false) });
             if (res.ok) {
                 const data = await res.json();
                 // mirror to localStorage for offline
@@ -256,7 +269,7 @@ function deleteProduct(productId) {
                 // try server delete first
                 try {
                     if (serverAvailable) {
-                        const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+                        const res = await fetch(`/api/products/${productId}`, { method: 'DELETE', headers: buildHeaders(false) });
                         if (res.ok) {
                             showToast('Product deleted on server!', 'success');
                             await renderProductsTable();
@@ -432,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (editingId) {
                         const res = await fetch(`/api/products/${editingId}`, {
                             method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: buildHeaders(true),
                             body: JSON.stringify({ name, price, desc, stock, image: imageUrl, category, sizes })
                         });
                         if (res.ok) {
@@ -444,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         const res = await fetch('/api/products', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: buildHeaders(true),
                             body: JSON.stringify({ name, price, desc, stock, image: imageUrl, category, sizes })
                         });
                         if (res.ok) {
