@@ -11,6 +11,23 @@ function checkAdminAuth() {
 
 console.log('admin.js loaded (v2)');
 
+// Server availability flag
+let serverAvailable = false;
+
+async function checkServerAvailability() {
+    try {
+        const res = await fetch('/api/health', { cache: 'no-store' });
+        if (res && res.ok) {
+            serverAvailable = true;
+            console.info('Backend API reachable');
+        } else {
+            serverAvailable = false;
+        }
+    } catch (err) {
+        serverAvailable = false;
+    }
+}
+
 // Load products from localStorage or use defaults
 function getAdminProducts() {
     const stored = localStorage.getItem('adminProducts');
@@ -36,6 +53,25 @@ function getAdminProducts() {
         }
     }
     return getDefaultProducts();
+}
+
+// Try to load products from backend API if available, otherwise fall back to localStorage defaults
+async function loadProducts() {
+    if (serverAvailable) {
+        try {
+            const res = await fetch('/api/products');
+            if (res.ok) {
+                const data = await res.json();
+                // mirror to localStorage for offline
+                try { localStorage.setItem('adminProducts', JSON.stringify(data)); } catch (e) {}
+                return data;
+            }
+        } catch (e) {
+            console.warn('Failed to fetch products from API, falling back to localStorage', e);
+            serverAvailable = false;
+        }
+    }
+    return getAdminProducts();
 }
 
 // Default products
@@ -106,13 +142,13 @@ async function searchPexelsImages(query) {
 }
 
 // Render products in the table
-function renderProductsTable() {
-    const products = getAdminProducts();
+async function renderProductsTable() {
+    const products = await loadProducts();
     const tbody = document.getElementById('products-table-body');
     const countEl = document.getElementById('product-count');
     
     tbody.innerHTML = '';
-    countEl.textContent = products.length;
+    countEl.textContent = (products && products.length) ? products.length : 0;
 
     if (products.length === 0) {
         tbody.innerHTML = `
@@ -125,7 +161,7 @@ function renderProductsTable() {
         return;
     }
 
-    products.forEach(prod => {
+    (products || []).forEach(prod => {
         const row = document.createElement('tr');
         const category = prod.category || 'Shoes';
         const sizes = Array.isArray(prod.sizes) ? prod.sizes.join(', ') : (prod.sizes || 'N/A');
@@ -164,7 +200,7 @@ function renderProductsTable() {
         if (editBtn) editBtn.addEventListener('click', () => loadProductForEdit(prod.id));
         if (delBtn) delBtn.addEventListener('click', () => deleteProduct(prod.id));
     });
-    console.debug('renderProductsTable: rendered', products.length, 'rows. First item:', products[0] && products[0].name);
+    console.debug('renderProductsTable: rendered', (products||[]).length, 'rows. First item:', products && products[0] && products[0].name);
 }
 
 // Load product data into form for editing
@@ -216,10 +252,28 @@ function deleteProduct(productId) {
     }
 
     if (confirm(`🗑️ Delete "${product.name}"? This cannot be undone.`)) {
-        const updatedProducts = products.filter(p => p.id !== productId);
-        saveAdminProducts(updatedProducts);
-        renderProductsTable();
-        showToast('Product deleted successfully!', 'success');
+            (async () => {
+                // try server delete first
+                try {
+                    if (serverAvailable) {
+                        const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+                        if (res.ok) {
+                            showToast('Product deleted on server!', 'success');
+                            await renderProductsTable();
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Server delete failed, falling back to local', e);
+                    serverAvailable = false;
+                }
+
+                // Fallback to local delete
+                const updatedProducts = products.filter(p => p.id !== productId);
+                saveAdminProducts(updatedProducts);
+                await renderProductsTable();
+                showToast('Product deleted successfully!', 'success');
+            })();
     }
 }
 
@@ -354,6 +408,82 @@ document.addEventListener('DOMContentLoaded', function() {
             
             results.appendChild(imgOption);
         });
+    });
+    
+    document.getElementById('product-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        (async () => {
+            const name = document.getElementById('product-name').value.trim();
+            const price = parseFloat(document.getElementById('product-price').value);
+            const desc = document.getElementById('product-desc').value.trim();
+            const stock = parseInt(document.getElementById('product-stock').value);
+            const imageUrl = document.getElementById('product-image-url').value || 'https://via.placeholder.com/400x280?text=No+Image';
+            // Optional fields: category and sizes (comma-separated)
+            const category = (document.getElementById('product-category') && document.getElementById('product-category').value.trim()) || 'Shoes';
+            const sizesRaw = (document.getElementById('product-sizes') && document.getElementById('product-sizes').value.trim()) || '';
+            const sizes = sizesRaw ? sizesRaw.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(window.DEFAULT_SIZES) ? window.DEFAULT_SIZES : []);
+            const editingId = this.dataset.editingId;
+
+            if (!validateProductForm(name, price, desc, stock)) return;
+
+            // If server available, try to POST/PUT to server
+            if (serverAvailable) {
+                try {
+                    if (editingId) {
+                        const res = await fetch(`/api/products/${editingId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name, price, desc, stock, image: imageUrl, category, sizes })
+                        });
+                        if (res.ok) {
+                            showToast('✅ Product updated on server!', 'success');
+                            await renderProductsTable();
+                            resetFormToAddMode();
+                            return;
+                        }
+                    } else {
+                        const res = await fetch('/api/products', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name, price, desc, stock, image: imageUrl, category, sizes })
+                        });
+                        if (res.ok) {
+                            showToast('✅ Product added to server!', 'success');
+                            await renderProductsTable();
+                            resetFormToAddMode();
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Server create/update failed, falling back to localStorage', e);
+                    serverAvailable = false;
+                }
+            }
+
+            // Fallback to local behavior
+            let products = getAdminProducts();
+            if (editingId) {
+                const product = products.find(p => p.id === parseInt(editingId));
+                if (product) {
+                    product.name = name;
+                    product.price = price;
+                    product.desc = desc;
+                    product.stock = stock;
+                    product.image = imageUrl;
+                    product.category = category;
+                    product.sizes = sizes;
+                    showToast('✅ Product updated locally!', 'success');
+                }
+            } else {
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({ id: newId, name, price, desc, stock, image: imageUrl, category, sizes });
+                showToast('✅ Product added locally!', 'success');
+            }
+
+            saveAdminProducts(products);
+            await renderProductsTable();
+            resetFormToAddMode();
+        })();
     });
 
     // Cancel edit button
