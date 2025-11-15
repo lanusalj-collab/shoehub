@@ -1,7 +1,7 @@
 
 body, .app-bg {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #e2e8f0;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+    color: #78350f;
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
 }
@@ -13,38 +13,42 @@ body, .app-bg {
 
 /* Navigation Bar */
 .navbar {
-    background: rgba(15, 23, 42, 0.95) !important;
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%) !important;
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(139, 69, 19, 0.3);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
 }
 
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #fef3c7 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .nav-link {
-    color: #cbd5e1 !important;
+    color: #fef3c7 !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #fbbf24 !important;
 }
 
 /* Product Cards */
 .card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    color: #e2e8f0;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #f59e0b;
+    color: #78350f;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 15px;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(217, 119, 6, 0.15);
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(217, 119, 6, 0.3);
+    border-color: #ea580c;
 }
 
 /* Ensure product images have a fixed visual area */
@@ -56,83 +60,85 @@ body, .app-bg {
 }
 
 .card-title {
-    font-weight: 600;
-    color: #f8fafc;
+    font-weight: 700;
+    color: #92400e;
 }
 
 .card-text {
-    color: #e6eef6 !important; 
+    color: #78350f !important; 
 }
 
 .card-text.fw-bold.fs-4 {
-    color: #10b981; 
+    color: #d97706; 
     font-size: 1.8rem !important;
 }
 
 /* --- 4. Call-to-Action Buttons --- */
 
 .btn-primary {
-    background-color: #3b82f6 !important; 
-    border-color: #3b82f6 !important;
+    background-color: #ea580c !important; 
+    border-color: #ea580c !important;
+    color: #fef3c7 !important;
     font-weight: 600;
     transition: background-color 0.2s;
     border-radius: 8px;
 }
 
 .btn-primary:hover {
-    background-color: #2563eb !important; 
-    border-color: #2563eb !important;
+    background-color: #dc2626 !important; 
+    border-color: #dc2626 !important;
 }
 
 .btn-danger {
-    background-color: #ef4444 !important;
-    border-color: #ef4444 !important;
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #fef3c7 !important;
 }
 
 .btn-danger:hover {
-    background-color: #dc2626 !important;
-    border-color: #dc2626 !important;
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
 }
 
 /* --- 5. Cart Offcanvas & Checkout Section --- */
 
 .offcanvas {
-    background-color: rgba(0,0,0,0.6); /* semi-opaque dark panel for contrast */
-    color: #f3f4f6;
+    background-color: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    color: #78350f;
 }
 
 .offcanvas-header, .offcanvas-title {
-    background-color: #111827;
-    color: #f3f4f6;
-    border-bottom: 1px solid #374151;
+    background-color: #ea580c;
+    color: #fef3c7;
+    border-bottom: 1px solid #f59e0b;
 }
 
 .form-control {
-    background-color: #374151; 
-    color: #f3f4f6;
-    border-color: #4b5563;
+    background-color: #fef3c7; 
+    color: #78350f;
+    border-color: #f59e0b;
 }
 
 .form-control:focus {
-    background-color: #374151;
-    color: #f3f4f6;
-    border-color: #3b82f6; 
-    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    background-color: #fffbeb;
+    color: #78350f;
+    border-color: #ea580c; 
+    box-shadow: 0 0 0 0.25rem rgba(234, 88, 12, 0.25);
 }
 
 .list-group-item {
-    background-color: #111827;
-    border-color: #374151;
-    color: #f3f4f6;
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #78350f;
 }
 
 #total-container .fw-bold {
-    color: #10b981; 
+    color: #ea580c; 
 }
 
 .alert-info {
-    background-color: #4B6382; /* alert background from attachment */
-    color: #A4B5C4; /* lighter alert text color */
-    border-color: #6a90b4; /* accent border color */
+    background-color: #fed7aa;
+    color: #92400e;
+    border-color: #f59e0b;
     border-radius: 8px;
 }
