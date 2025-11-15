@@ -58,3 +58,31 @@ If you'd like, I can:
 - Add the GitHub remote and push (provide repo URL). 
 - Create a GitHub repo for you (requires a GitHub token or `gh` CLI and your confirmation).
 # nestle
+
+## Deploying backend to Render with MongoDB
+
+This project now includes an Express + Mongoose backend that expects a `MONGODB_URI` environment variable.
+
+Steps to deploy on Render (quick):
+
+1. Install dependencies locally to test:
+
+```powershell
+npm install
+```
+
+2. Create a `backend/.env` from `backend/.env.sample` or set the `MONGODB_URI` and `PORT` in Render environment variables.
+
+3. On Render:
+   - Create a new Web Service and connect your GitHub repo.
+   - Set the `Build Command` to `npm install`.
+   - Set the `Start Command` to `npm start`.
+   - In the service's "Environment" settings, add a variable named `MONGODB_URI` with your MongoDB connection string (Atlas or other).
+
+4. Optional: Use the seed endpoint once to populate default products:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri https://<your-render-url>/api/products/seed
+```
+
+5. The admin UI and frontend can be updated to call `/api/products` endpoints instead of localStorage to persist data in MongoDB. If you'd like, I can wire `admin.js` to use the API.

@@ -3,70 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Core Zip</title>
+    <title>Contact Us - ShoeHub</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; }
+        
+        .navbar { background: rgba(15, 23, 42, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(148, 163, 184, 0.2); }
+        .navbar-brand { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .hero { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); padding: 3rem 0; border-radius: 20px; margin-bottom: 3rem; border: 1px solid rgba(148, 163, 184, 0.2); text-align: center; }
+        .hero h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
+        .hero p { color: #cbd5e1; font-size: 1.1rem; }
+        
+        .contact-container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        
+        .contact-form-section { background: rgba(30, 41, 59, 0.8); padding: 2.5rem; border-radius: 15px; border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); }
+        .contact-form-section h2 { color: #3b82f6; font-weight: 700; margin-bottom: 1.5rem; }
+        
+        .contact-info-section { display: flex; flex-direction: column; gap: 2rem; }
+        .info-card { background: rgba(30, 41, 59, 0.8); padding: 2rem; border-radius: 15px; border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .info-card:hover { border-color: rgba(59, 130, 246, 0.5); background: rgba(30, 41, 59, 0.95); }
+        .info-card i { font-size: 1.8rem; color: #3b82f6; margin-bottom: 1rem; }
+        .info-card h3 { color: #60a5fa; font-weight: 700; margin-bottom: 0.5rem; }
+        .info-card p { color: #cbd5e1; margin: 0; }
+        
+        .form-label { color: #cbd5e1; font-weight: 600; margin-bottom: 0.5rem; }
+        .form-control, .form-control:focus { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.3); color: #e2e8f0; transition: all 0.3s ease; }
+        .form-control:focus { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); background: rgba(15, 23, 42, 0.8); }
+        .form-control::placeholder { color: rgba(203, 213, 225, 0.5); }
+        
+        .btn-send { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; padding: 0.85rem 2rem; font-weight: 700; border-radius: 8px; transition: all 0.3s ease; }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
+        
+        .contact-status { color: #60a5fa; font-weight: 600; }
+        .contact-status.success { color: #10b981; }
+        .contact-status.error { color: #ef4444; }
+        
+        .offcanvas { background: rgba(15, 23, 42, 0.95) !important; backdrop-filter: blur(10px); }
+        .offcanvas-header { border-bottom: 1px solid rgba(148, 163, 184, 0.2); }
+        .offcanvas-title { color: #e2e8f0 !important; }
+        
+        .list-group-item { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+        .list-group-item:hover { background: rgba(30, 41, 59, 0.8); }
+        
+        @media (max-width: 768px) {
+            .contact-container { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
 </head>
-<body class="app-bg">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Core Zip</a>
-            <div class="d-flex gap-2">
-                <a class="btn btn-outline-light" href="about.html">About</a>
-                <a class="btn btn-outline-light" href="index.html">Products</a>
-                <a class="btn btn-outline-light" href="contact.html">Contact</a>
-                <button class="btn btn-outline-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cart-section" aria-controls="#cart-section">
-                    Cart (<span id="cart-count">0</span>)
-                </button>
+            <a class="navbar-brand" href="index.html"><i class="fas fa-shoe-prints"></i> ShoeHub</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="d-flex gap-2 ms-auto">
+                    <a class="btn btn-outline-light" href="about.html">About</a>
+                    <a class="btn btn-outline-light" href="index.html">Products</a>
+                    <a class="btn btn-outline-light" href="contact.html">Contact</a>
+                    <button class="btn btn-outline-light position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cart-section">
+                        <i class="fas fa-shopping-cart"></i> Cart (<span id="cart-count">0</span>)
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="container my-5 text-light">
-        <h1>Contact Us</h1>
-        <p class="mb-3">Have a question? Fill out the form and we'll get back to you within 48 hours.</p>
+    <main class="container my-5">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1><i class="fas fa-envelope"></i> Get In Touch</h1>
+            <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+        </div>
 
-        <form id="contact-form" class="row g-3" style="max-width:700px;">
-            <div class="col-md-6">
-                <label for="contact-name" class="form-label visually-hidden">Name</label>
-                <input type="text" class="form-control" id="contact-name" placeholder="Full name" required>
+        <!-- Contact Container -->
+        <div class="contact-container">
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h2><i class="fas fa-paper-plane"></i> Send us a Message</h2>
+                
+                <form id="contact-form">
+                    <div class="mb-3">
+                        <label for="contact-name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="contact-name" placeholder="Juan Dela Cruz" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="contact-email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="contact-email" placeholder="juanDelaCruz@example.com" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="contact-subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="contact-subject" placeholder="e.g., Product Inquiry" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="contact-message" class="form-label">Message</label>
+                        <textarea id="contact-message" class="form-control" rows="5" placeholder="Tell us what's on your mind..." required></textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2 align-items-center">
+                        <button type="submit" class="btn btn-send" id="contact-send">
+                            <i class="fas fa-send"></i> Send Message
+                        </button>
+                        <span id="contact-status" class="contact-status"></span>
+                    </div>
+                </form>
             </div>
-            <div class="col-md-6">
-                <label for="contact-email" class="form-label visually-hidden">Email</label>
-                <input type="email" class="form-control" id="contact-email" placeholder="Email" required>
+
+            <!-- Contact Info -->
+            <div class="contact-info-section">
+                <div class="info-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Location</h3>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.5234!2d123.4!3d7.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x325208d1e8f8f8f1%3A0x1234567890abcdef!2sTiguma%2C%20Pagadian%20City%2C%20Zamboanga%20del%20Sur!5e0!3m2!1sen!2s!4v1700000000000" width="100%" height="250" style="border: none; border-radius: 10px; margin-top: 1rem;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                
+                <div class="info-card">
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone</h3>
+                    <p>+63 953 200 4117</p>
+                </div>
+                
+                <div class="info-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>@shoehub.com</p>
+                </div>
+                
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Hours</h3>
+                    <p>Monday - Friday: 9AM - 6PM<br>Saturday: 10AM - 4PM<br>Sunday: Closed</p>
+                </div>
             </div>
-            <div class="col-12">
-                <label for="contact-message" class="form-label visually-hidden">Message</label>
-                <textarea id="contact-message" class="form-control" rows="4" placeholder="How can we help?" required></textarea>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-outline-light" id="contact-send">Send Message</button>
-                <span id="contact-status" class="ms-3 text-light"></span>
-            </div>
-        </form>
+        </div>
     </main>
 
-    <!-- Include cart offcanvas markup so cart works on this page -->
+    <!-- Cart Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cart-section" aria-labelledby="cart-section-label">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="cart-section-label">Shopping Cart (<span id="cart-total-items">0</span> unique items)</h5>
+            <h5 class="offcanvas-title" id="cart-section-label"><i class="fas fa-shopping-cart"></i> Shopping Cart (<span id="cart-total-items">0</span>)</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body d-flex flex-column">
+        <div class="offcanvas-body d-flex flex-column" style="background: rgba(15, 23, 42, 0.95);">
             <ul id="cart-list" class="list-group list-group-flush flex-grow-1"></ul>
-            <div class="mt-4 pt-3 border-top" id="checkout-container" style="display:none;">
+            <div class="mt-4 pt-3 border-top border-secondary" id="checkout-container" style="display:none;">
                 <div id="total-container" class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Total:</h5>
-                    <h4 class="mb-0 fw-bold text-success">$<span id="total">0.00</span></h4>
+                    <h5 class="mb-0" style="color: #e2e8f0;">Total:</h5>
+                    <h4 class="mb-0 fw-bold" style="color: #4ade80;">₱<span id="total">0.00</span></h4>
                 </div>
-                <h6>Checkout Details</h6>
+                <h6 style="color: #e2e8f0;">Checkout Details</h6>
                 <form id="checkout-form">
-                    <div class="mb-3"><input class="form-control" id="customer-name" placeholder="Full Name" required></div>
-                    <div class="mb-3"><input class="form-control" id="customer-email" placeholder="Email" required></div>
-                    <div class="mb-3"><textarea class="form-control" id="customer-address" rows="2" placeholder="Shipping address" required></textarea></div>
-                    <button type="submit" class="btn btn-primary w-100 mt-3" id="confirm-checkout">Place Order</button>
+                    <div class="mb-3"><input class="form-control" id="customer-name" placeholder="Full Name" required style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.3); color: #e2e8f0;"></div>
+                    <div class="mb-3"><input class="form-control" id="customer-email" placeholder="Email" required style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.3); color: #e2e8f0;"></div>
+                    <div class="mb-3"><textarea class="form-control" id="customer-address" rows="2" placeholder="Shipping address" required style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.3); color: #e2e8f0;"></textarea></div>
+                    <button type="submit" class="btn w-100 mt-3" id="confirm-checkout" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; color: white; font-weight: 700; border-radius: 8px;">Place Order</button>
                 </form>
             </div>
         </div>

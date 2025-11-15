@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ShoeHub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .admin-header h1 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        }
+        
+        .product-form-container,
+        .product-table-container {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .product-form-container h3,
+        .product-table-container h3 {
+            color: #60a5fa;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            padding: 0.7rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            color: #e2e8f0;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(203, 213, 225, 0.6);
+        }
+        
+        .btn-add-product {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-product:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-primary, .btn-secondary {
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #cbd5e1;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-secondary {
+            border-color: rgba(148, 163, 184, 0.3);
+            color: #cbd5e1;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .product-image-preview {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .image-search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+            background: rgba(15, 23, 42, 0.6);
+        }
+        
+        .image-option {
+            cursor: pointer;
+            padding: 0.75rem;
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.6);
+        }
+        
+        .image-option:hover,
+        .image-option.selected {
+            border-color: rgba(59, 130, 246, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .image-option img {
+            max-width: 100%;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            color: #60a5fa;
+        }
+        
+        .table {
+            color: #e2e8f0;
+        }
+        
+        .table thead {
+            background: rgba(59, 130, 246, 0.1);
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .table thead th {
+            color: #60a5fa;
+            font-weight: 700;
+            border: none;
+        }
+        
+        .table tbody tr {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .table tbody td {
+            color: #cbd5e1;
+            vertical-align: middle;
+        }
+        
+        .text-muted {
+            color: rgba(203, 213, 225, 0.7) !important;
+        }
+        
+        .input-group {
+            gap: 0.5rem;
+        }
+        
+        small { color: rgba(203, 213, 225, 0.6); }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1><i class="fas fa-cogs"></i> Admin Dashboard</h1>
+        <button class="btn btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <div class="container my-5">
+        <!-- Add/Edit Product Form -->
+        <div class="product-form-container">
+            <h3 class="mb-4">
+                <i class="fas fa-plus-circle"></i> <span id="form-title">Add New Product</span>
+            </h3>
+            <form id="product-form">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="product-name" class="form-label"><i class="fas fa-tag"></i> Product Name</label>
+                        <input type="text" class="form-control" id="product-name" placeholder="e.g., Premium Shoes" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="product-price" class="form-label"><i class="fas fa-peso-sign"></i> Price (₱)</label>
+                        <input type="number" class="form-control" id="product-price" placeholder="e.g., 999.99" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="product-desc" class="form-label"><i class="fas fa-align-left"></i> Description</label>
+                    <textarea class="form-control" id="product-desc" rows="3" placeholder="Product description..." required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="product-stock" class="form-label"><i class="fas fa-boxes"></i> Stock</label>
+                        <input type="number" class="form-control" id="product-stock" placeholder="e.g., 50" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="product-image-search" class="form-label"><i class="fas fa-image"></i> Search Image (Pexels)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="product-image-search" placeholder="e.g., sneakers, boots...">
+                            <button type="button" class="btn btn-outline-secondary" id="search-image-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="product-category" class="form-label"><i class="fas fa-tags"></i> Category</label>
+                        <input type="text" class="form-control" id="product-category" placeholder="e.g., Sneakers, Boots">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="product-sizes" class="form-label"><i class="fas fa-ruler"></i> Sizes (comma-separated)</label>
+                        <input type="text" class="form-control" id="product-sizes" placeholder="e.g., 6,7,8,9,10">
+                    </div>
+                </div>
+
+                <div class="loading-spinner" id="image-loading">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div> Searching images...
+                </div>
+
+                <div class="image-search-results" id="image-results"></div>
+
+                <div>
+                    <label class="form-label"><i class="fas fa-picture-o"></i> Image Preview</label>
+                    <img id="product-image-preview" class="product-image-preview" src="" alt="No image selected" style="display:none;">
+                    <input type="hidden" id="product-image-url">
+                    <small>Image URL: <span id="image-url-display">None</span></small>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-add-product" id="submit-btn"><i class="fas fa-plus"></i> Add Product</button>
+                    <button type="reset" class="btn btn-secondary" id="reset-form-btn"><i class="fas fa-redo"></i> Clear</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-edit-btn" style="display:none;"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Table (ShoeHub Inventory) -->
+        <div class="product-table-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0"><i class="fas fa-shoe-prints"></i> Shoe Inventory</h3>
+                <div>
+                    <button id="export-csv" class="btn btn-secondary btn-sm me-2" title="Export inventory as CSV"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    <input type="text" id="inventory-filter" class="form-control form-control-sm d-inline-block" style="width:220px;" placeholder="Filter by name or category">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Sizes</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Products will be loaded here by admin.js -->
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted mt-3"><small><i class="fas fa-info-circle"></i> Total products: <span id="product-count">0</span></small></p>
+        </div>
+    </div>
+
+    <script>
+        // Preload guard: detect legacy admin product data (hoodies/jackets) and remove it
+        (function(){
+            try {
+                const legacyKeywords = ['hoodie','jacket','parka','bomber'];
+                const checkAndRemove = (key) => {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return false;
+                    try {
+                        const arr = JSON.parse(raw);
+                        if (!Array.isArray(arr)) return false;
+                        const looksLegacy = arr.some(p => {
+                            const n = (p.name || '').toLowerCase();
+                            return legacyKeywords.some(k => n.includes(k));
+                        });
+                        if (looksLegacy) {
+                            console.warn(`Removing legacy localStorage key ${key}`);
+                            localStorage.removeItem(key);
+                            return true;
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                    return false;
+                };
+                checkAndRemove('adminProducts');
+                checkAndRemove('adminProductsUpdated');
+            } catch (e) { console.error(e); }
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="admin.js?v=2"></script>
+
+    <script>
+        // Simple client-side CSV export for current inventory rows
+        document.getElementById('export-csv')?.addEventListener('click', function () {
+            const rows = [];
+            const header = ['ID','Name','Category','Sizes','Price','Stock','Description'];
+            rows.push(header.join(','));
+            // Prefer admin.js's getAdminProducts if available (keeps same view), fallback to localStorage
+            const products = (typeof getAdminProducts === 'function') ? getAdminProducts() : (JSON.parse(localStorage.getItem('adminProducts') || '[]') || []);
+            const source = products.length ? products : [];
+            source.forEach(p => {
+                const category = p.category || 'Shoes';
+                const sizes = p.sizes ? p.sizes.join('|') : (p.sizes || 'N/A');
+                const line = [p.id, `"${(p.name||'').replace(/"/g,'""')}"`, category, `"${sizes}"`, p.price, p.stock, `"${(p.desc||'').replace(/"/g,'""')}"`];
+                rows.push(line.join(','));
+            });
+            const csv = rows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'shoehub-inventory.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+        // Simple client-side filter
+        document.getElementById('inventory-filter')?.addEventListener('input', function (e) {
+            const q = e.target.value.toLowerCase();
+            document.querySelectorAll('#products-table-body tr').forEach(tr => {
+                const text = tr.innerText.toLowerCase();
+                tr.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
